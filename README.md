@@ -1,6 +1,6 @@
 # <img height="30px" src="./.assets/icon_64.png" alt="Attribute Dependency Injection"></img> Attribute Dependency Injection (DI)
 
-<!-- [![version](https://img.shields.io/nuget/v/AttributeDependencyInjection?style=flat-square)](https://www.nuget.org/packages/AttributeDependencyInjection) [![downloads](https://img.shields.io/nuget/dt/AttributeDependencyInjection?style=flat-square&color=darkgreen)](https://www.nuget.org/packages/AttributeDependencyInjection) -->
+ [![version](https://img.shields.io/nuget/v/AttributeDependencyInjection?style=flat-square)](https://www.nuget.org/packages/AttributeDependencyInjection) [![downloads](https://img.shields.io/nuget/dt/AttributeDependencyInjection?style=flat-square&color=darkgreen)](https://www.nuget.org/packages/AttributeDependencyInjection)
 
 This project provides a set of extensions to the IServiceCollection for registering services using custom attributes.
 

@@ -10,6 +10,24 @@ This project provides a set of extensions to the IServiceCollection for register
 
 ## How to Use
 
+### Add <code>DependencyAssemblyAttribute</code> for Discoverability
+
+By default, only assemblies with the <code>DependencyAssemblyAttribute</code> will be scanned for attributed services (this behavior can be changed through the startup options).
+
+__.NET Core and later__
+Add the attribute through the project's <code>.csproj</code> file:
+```xml
+<ItemGroup>
+    <AssemblyAttribute Include="AttributeDI.Attributes.DependencyAssemblyAttribute" />
+</ItemGroup>
+```
+
+__.NET Framework__
+Add the attribute in the <code>AssemblyInfo.cs</code> file:
+```csharp
+[assembly: DependencyAssembly]
+```
+
 ### Defining Services with Attributes
 
 Services are defined using attributes that indicate how they should be registered with the DI container. The example below shows their basic usage:
@@ -237,6 +255,21 @@ public sealed class DynamicService
             var other = x.GetRequiredService<IOtherService>();
             return new DynamicService(other);
         });
+    }
+}
+```
+
+Optionally, if the application's <code>IConfiguration</code> is provided to the startup options, you can specify a different overload:
+
+```csharp
+[DynamicServiceRegistration]
+public sealed class DynamicService
+{
+    [DynamicServiceRegistrationMethod]
+    private static void AddToServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<DynamicService>()
+                .Bind(configuration);
     }
 }
 ```

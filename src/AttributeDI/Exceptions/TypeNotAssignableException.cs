@@ -1,6 +1,6 @@
-using MG.DependencyInjection.Internal.Extensions;
+using AttributeDI.Internal.Extensions;
 
-namespace MG.DependencyInjection.Exceptions;
+namespace AttributeDI.Exceptions;
 
 /// <summary>
 /// An exception thrown when one <see cref="Type"/> was attempted to be assigned to a variable of another, but the 
@@ -25,7 +25,7 @@ public class TypeNotAssignableException : AttributeDIException
     /// <param name="baseType"></param>
     /// <param name="implementingType"></param>
     public TypeNotAssignableException(Type baseType, Type implementingType)
-        : this(baseType, implementingType, (Exception?)null)
+        : this(baseType, implementingType, null)
     {
     }
     /// <summary>
@@ -35,7 +35,7 @@ public class TypeNotAssignableException : AttributeDIException
     /// <param name="implementingType"></param>
     /// <param name="innerException"></param>
     public TypeNotAssignableException(Type baseType, Type implementingType, Exception? innerException)
-        : this((string?)null, baseType, implementingType, innerException)
+        : this(null, baseType, implementingType, innerException)
     {
     }
     /// <summary>

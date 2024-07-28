@@ -1,4 +1,4 @@
-namespace MG.DependencyInjection.Startup;
+namespace AttributeDI.Startup;
 
 /// <summary>
 /// An interface for adding services by type or type definition that should be excluded from being registered

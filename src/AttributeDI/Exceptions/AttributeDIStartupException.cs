@@ -1,7 +1,7 @@
-using MG.DependencyInjection.Internal.Extensions;
+using AttributeDI.Internal.Extensions;
 using System.ComponentModel;
 
-namespace MG.DependencyInjection.Exceptions;
+namespace AttributeDI.Exceptions;
 
 /// <summary>
 /// Represents an error thrown during a Dependency Injection (DI) operation during the startup of an application.

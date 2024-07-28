@@ -1,13 +1,13 @@
-using MG.DependencyInjection.Attributes;
-using MG.DependencyInjection.Exceptions;
-using MG.DependencyInjection.Internal.Collections;
-using MG.DependencyInjection.Internal.Extensions;
-using MG.DependencyInjection.Startup;
+using AttributeDI.Attributes;
+using AttributeDI.Exceptions;
+using AttributeDI.Internal.Collections;
+using AttributeDI.Internal.Extensions;
+using AttributeDI.Startup;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MG.DependencyInjection;
+namespace AttributeDI;
 
 public static partial class AttributeDIExtensions
 {
@@ -18,19 +18,25 @@ public static partial class AttributeDIExtensions
         private readonly object[] _overload1;
         private readonly object[] _overload2;
 
+        internal readonly bool AllowsDuplicates;
         internal readonly IConfiguration Configuration;
         internal readonly IServiceTypeExclusions Exclusions;
         internal readonly IServiceCollection Services;
-        internal readonly Type MustHaveAttribute;
+        internal readonly Type MustImplement;
+        internal readonly bool ThrowOnMultipleDynamic;
+        internal readonly bool ThrowOnMissingDynamic;
 
-        internal ServiceResolutionContext(IServiceCollection services, IConfiguration configuration, in IServiceTypeExclusions exclusions)
+        internal ServiceResolutionContext(IServiceCollection services, AttributedServiceOptions options)
         {
-            MustHaveAttribute = typeof(ServiceRegistrationBaseAttribute);
+            AllowsDuplicates = options.AllowDuplicateServiceRegistrations;
+            ThrowOnMultipleDynamic = !options.IgnoreMultipleDynamicRegistrations;
+            ThrowOnMissingDynamic = options.ThrowOnMissingDynamicRegistrationMethod;
+            MustImplement = typeof(IDependencyInjectionAttribute);
             Services = services;
-            Configuration = configuration;
-            Exclusions = exclusions;
+            Configuration = options.Configuration;
+            Exclusions = options.GetServiceTypeExclusions();
             _overload1 = new object[1] { services };
-            _overload2 = new object[2] { services, configuration };
+            _overload2 = new object[2] { services, options.Configuration };
         }
 
         /// <inheritdoc cref="MethodBase.Invoke(object, object[])" path="/exception"/>
@@ -41,10 +47,36 @@ public static partial class AttributeDIExtensions
         }
     }
 
-    #region GET TYPES
+    #region GET / ENUMERATE METHODS
+    /// <exception cref="ArgumentNullException"><paramref name="type"/> is null.</exception>
+    private static MethodInfo? GetFirstDynamicMethodByName(Type type)
+    {
+        return type
+                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
+                .Where(x => x.IsDefined(typeof(DynamicServiceRegistrationMethodAttribute), inherit: false))
+                .OrderBy(x => x.Name)
+                .FirstOrDefault();
+    }
+    /// <exception cref="ArgumentNullException"><paramref name="type"/> is null.</exception>
+    /// <exception cref="AttributeDIStartupException">More than one dynamic method was found.</exception>
+    private static MethodInfo? GetSingleDynamicMethod(Type type)
+    {
+        try
+        {
+            return type
+                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
+                .Where(x => x.IsDefined(typeof(DynamicServiceRegistrationMethodAttribute), inherit: false))
+                .SingleOrDefault();
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new AttributeDIStartupException(type,
+                "More than one (1) dynamic registration method were found on the specified type.", e);
+        }
+    }
     private static IEnumerable<Type> GetResolvableTypes(Assembly assembly, ServiceResolutionContext context)
     {
-        Type mustHave = context.MustHaveAttribute;
+        Type mustHave = context.MustImplement;
         IServiceTypeExclusions exclusions = context.Exclusions;
 
         Type[] types = assembly.GetTypes();
@@ -113,11 +145,6 @@ public static partial class AttributeDIExtensions
             return type.IsValueType || type.IsInterface;
         }
     }
-    private static bool IsServicableAssembly(Assembly assembly)
-    {
-        return !assembly.IsDynamic
-            && assembly.IsDefined(typeof(DependencyAssemblyAttribute), inherit: false);
-    }
 
     #endregion
 
@@ -126,14 +153,26 @@ public static partial class AttributeDIExtensions
     /// <exception cref="AttributeDIStartupException"></exception>
     private static void AddFromRegistration(in ServiceResolutionContext context, Type type)
     {
-        MethodInfo? method = type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
-            .Where(x => x.IsDefined(typeof(DynamicDependencyRegistrationMethodAttribute), inherit: false))
-            .OrderBy(x => x.Name)
-            .FirstOrDefault();
+        MethodInfo? method;
+        try
+        {
+            method = context.ThrowOnMultipleDynamic
+                ? GetSingleDynamicMethod(type)
+                : GetFirstDynamicMethodByName(type);
+        }
+        catch (Exception e) when (e is not AttributeDIStartupException)
+        {
+            throw new AttributeDIStartupException(type, 
+                $"An exception occurred scanning the type for {nameof(DynamicServiceRegistrationMethodAttribute)} - {e.Message}", e);
+        }
 
         if (method is null)
         {
-            Debug.Fail("No registration method found.");
+            if (context.ThrowOnMissingDynamic)
+            {
+                throw new AttributeDIStartupException(type, "No dynamic registration method was found on the specified type.");
+            }
+
             return;
         }
 
@@ -147,7 +186,7 @@ public static partial class AttributeDIExtensions
         }
         catch (Exception e)
         {
-            throw new AttributeDIStartupException(typeof(AttributeDIExtensions), $"Failed to invoke registration method \"{method.Name}\".", e);
+            throw new AttributeDIStartupException(typeof(AttributeDIExtensions), $"Failed to invoke registration method \"{method.Name}\" - {e.Message}", e);
         }
     }
 
@@ -157,7 +196,7 @@ public static partial class AttributeDIExtensions
     {
         foreach (Type type in GetResolvableTypes(assembly, context))
         {
-            if (!type.IsInterface && type.IsDefined(typeof(DynamicDependencyRegistrationAttribute), inherit: false))
+            if (!type.IsInterface && type.IsDefined(typeof(DynamicServiceRegistrationAttribute), inherit: false))
             {
                 AddFromRegistration(in context, type);
             }
@@ -167,7 +206,7 @@ public static partial class AttributeDIExtensions
                 {
                     foreach (var descriptor in ServiceRegistrationBaseAttribute.CreateDescriptorsFromType(type, context.Exclusions))
                     {
-                        AddService(context.Services, descriptor);
+                        AddService(context.Services, descriptor, in context.AllowsDuplicates);
                     }
                 }
                 catch (Exception e) when (e is not DuplicatedServiceException)
@@ -183,13 +222,10 @@ public static partial class AttributeDIExtensions
     /// <exception cref="InvalidOperationException">
     ///     <paramref name="services"/> is read-only.
     /// </exception>
-    private static void AddService(IServiceCollection services, ServiceDescriptor descriptor)
+    private static void AddService(IServiceCollection services, ServiceDescriptor descriptor, in bool allowsDuplicates)
     {
-        if (!_addedViaAttributes.Add(descriptor))
+        if (!allowsDuplicates && !_addedViaAttributes.Add(descriptor))
         {
-            string msg = $"Duplicate service descriptor -> Service: {descriptor.ServiceType.GetName()}; Implementation: {descriptor.ImplementationType.GetName()}";
-            Debug.Fail(msg);
-
             throw new DuplicatedServiceException(
                 serviceType: descriptor.ServiceType,
                 diType: typeof(AttributeDIExtensions));
@@ -226,7 +262,7 @@ public static partial class AttributeDIExtensions
         /// <exception cref="InvalidOperationException">
         ///     <paramref name="services"/> is read-only.
         /// </exception>
-        private static void AddService(IServiceCollection services, ServiceDescriptor descriptor)
+        private static void AddService(IServiceCollection services, ServiceDescriptor descriptor, in bool allowsDuplicates)
         {
             services.Add(descriptor);
         }

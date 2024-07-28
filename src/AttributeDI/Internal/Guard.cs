@@ -1,4 +1,4 @@
-namespace MG.DependencyInjection.Internal;
+namespace AttributeDI.Internal;
 
 /// <summary>
 /// Provides static methods to enforce various preconditions, such as type safety, non-null values, and range 

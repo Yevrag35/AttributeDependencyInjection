@@ -1,4 +1,4 @@
-namespace MG.DependencyInjection.Exceptions;
+namespace AttributeDI.Exceptions;
 
 /// <summary>
 /// An exception thrown when a constructor is not found on a class type through reflection.
@@ -31,7 +31,7 @@ public sealed class MissingConstructorException : AttributeDIException
     ///     <inheritdoc cref="BindingFlagsUsed" path="/summary"/>
     /// </param>
     public MissingConstructorException(Type classType, BindingFlags flagsUsed)
-        : this(classType, flagsUsed, (Exception?)null)
+        : this(classType, flagsUsed, null)
     {
     }
     /// <summary>

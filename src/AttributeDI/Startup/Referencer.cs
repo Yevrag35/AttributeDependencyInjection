@@ -1,4 +1,4 @@
-namespace MG.DependencyInjection.Startup;
+namespace AttributeDI.Startup;
 
 /// <summary>
 /// A delegate that acts on a <see cref="Referencer"/>.
@@ -10,6 +10,22 @@ public delegate void ActOnReferencer(in Referencer referencer);
 /// A struct used at application startup to force loading of assemblies by referencing a type
 /// from each assembly.
 /// </summary>
+/// <remarks>
+/// This struct is mainly used in <see cref="AttributedServiceOptions.LoadReferences(ActOnReferencer)"/> to ensure 
+/// that certain assemblies are loaded into the application domain, but made public for use elsewhere in the application
+/// startup process. By referencing types from these assemblies, they will force the assembly to load without performing 
+/// any additional actions.
+/// <para>
+/// An example:
+/// <code>
+/// Referencer.LoadAll((in Referencer r) =>
+/// {
+///     r.Reference&lt;SomeTypeFromAssembly1&gt;()
+///      .Reference&lt;SomeTypeFromAssembly2&gt;();
+/// });
+/// </code>
+/// </para>
+/// </remarks>
 public readonly ref struct Referencer
 {
     /// <summary>

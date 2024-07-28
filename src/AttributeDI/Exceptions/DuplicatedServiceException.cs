@@ -1,6 +1,6 @@
-using MG.DependencyInjection.Internal.Extensions;
+using AttributeDI.Internal.Extensions;
 
-namespace MG.DependencyInjection.Exceptions;
+namespace AttributeDI.Exceptions;
 
 /// <summary>
 /// An exception that is thrown when a service is registered more than once in the Dependency Injection 

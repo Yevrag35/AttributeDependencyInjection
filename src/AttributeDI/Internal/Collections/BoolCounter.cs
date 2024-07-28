@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace MG.DependencyInjection.Internal.Collections;
+namespace AttributeDI.Internal.Collections;
 
 /// <summary>
 /// A ref struct that keeps track of the number of <see langword="true"/> boolean values that have been set.
@@ -14,9 +14,9 @@ internal ref struct BoolCounter
     /// <summary>
     /// The number of <see langword="true"/> boolean values that have been set.
     /// </summary>
-    public readonly int Count => _count;
+    internal readonly int Count => _count;
 
-    public BoolCounter(Span<bool> counted)
+    internal BoolCounter(Span<bool> counted)
     {
         _counted = counted;
         _count = 0;
@@ -27,11 +27,11 @@ internal ref struct BoolCounter
         return _counted[flag];
     }
 
-    public bool MarkFlag(int flag, bool value)
+    internal bool MarkFlag(int flag, bool value)
     {
         return value && this.MarkFlag(in flag);
     }
-    public bool MarkFlag(in int flag)
+    internal bool MarkFlag(in int flag)
     {
         bool result = false;
 
@@ -45,7 +45,7 @@ internal ref struct BoolCounter
         return result;
     }
 
-    public readonly bool MoveNext()
+    internal readonly bool MoveNext()
     {
         return _count < _counted.Length;
     }

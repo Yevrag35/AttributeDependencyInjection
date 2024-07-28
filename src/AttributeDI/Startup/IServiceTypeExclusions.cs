@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MG.DependencyInjection.Startup;
+namespace AttributeDI.Startup;
 
 /// <summary>
 /// An interface for querying the types that have been specified for exclusion from service registration.

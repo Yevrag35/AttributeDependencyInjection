@@ -1,16 +1,16 @@
-using MG.DependencyInjection.Exceptions;
-using MG.DependencyInjection.Internal.Collections;
-using MG.DependencyInjection.Startup;
+using AttributeDI.Exceptions;
+using AttributeDI.Internal.Collections;
+using AttributeDI.Startup;
 using System.Collections.Generic;
 
-namespace MG.DependencyInjection.Attributes;
+namespace AttributeDI.Attributes;
 
 #nullable enable
 /// <summary>
 /// A base attribute for defining services that will be automatically added to the dependency injection container
 /// with derived types being able to access/define the service type, implementation type.
 /// </summary>
-public abstract class ServiceRegistrationBaseAttribute : Attribute
+public abstract class ServiceRegistrationBaseAttribute : Attribute, IDependencyInjectionAttribute
 {
     /// <summary>
     /// The <see cref="Type"/> implementing the service.
@@ -19,7 +19,9 @@ public abstract class ServiceRegistrationBaseAttribute : Attribute
     /// Will default to the decorated type if not set or <see langword="null"/>.
     /// </remarks>
     protected Type? Implementation { get; set; }
-    /// <inheritdoc cref="ServiceLifetime"/>
+    /// <summary>
+    /// Gets or sets the lifetime of the service. Defaults to <see cref="ServiceLifetime.Singleton"/>.
+    /// </summary>
     public ServiceLifetime Lifetime { get; set; }
     /// <summary>
     /// The <see cref="Type"/> of the service.
@@ -75,7 +77,7 @@ public abstract class ServiceRegistrationBaseAttribute : Attribute
     }
 
     [DebuggerStepThrough]
-    private static bool ImplementsType( Type serviceType, Type implementationType)
+    private static bool ImplementsType(Type serviceType, Type implementationType)
     {
         if (serviceType.IsAssignableFrom(implementationType))
         {

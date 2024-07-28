@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MG.DependencyInjection.Internal.Collections;
+namespace AttributeDI.Internal.Collections;
 
 /// <summary>
 /// An efficient ref struct enumerator for <see cref="ReadOnlySpan{T}"/> types that 
@@ -10,7 +9,7 @@ namespace MG.DependencyInjection.Internal.Collections;
 /// <typeparam name="T"></typeparam>
 [DebuggerStepThrough]
 [StructLayout(LayoutKind.Auto)]
-public ref struct ArrayRefEnumerator<T>
+internal ref struct ArrayRefEnumerator<T>
 {
     private readonly ReadOnlySpan<T> _array;
     private int _index;
@@ -20,11 +19,7 @@ public ref struct ArrayRefEnumerator<T>
     /// </summary>
     public readonly T Current => _array[_index];
 
-    //public ArrayRefEnumerator(List<T> list)
-    //    : this(CollectionsMarshal.AsSpan(list))
-    //{
-    //}
-    public ArrayRefEnumerator(ReadOnlySpan<T> array)
+    internal ArrayRefEnumerator(ReadOnlySpan<T> array)
     {
         _array = array;
         _index = -1;

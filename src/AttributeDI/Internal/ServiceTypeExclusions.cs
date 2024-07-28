@@ -1,9 +1,9 @@
-using MG.DependencyInjection.Startup;
+using AttributeDI.Startup;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MG.DependencyInjection.Internal;
+namespace AttributeDI.Internal;
 
 internal sealed class ServiceTypeExclusions : IAddServiceTypeExclusions, IServiceTypeExclusions
 {

@@ -1,9 +1,9 @@
-namespace MG.DependencyInjection.Internal.Extensions;
+namespace AttributeDI.Internal.Extensions;
 
 /// <summary>
 /// An extension class for <see cref="Type"/> objects.
 /// </summary>
-public static class TypeExtensions
+internal static class TypeExtensions
 {
     /// <summary>
     /// Returns the fully qualified name or the member name of the current <see cref="Type"/>.
@@ -14,7 +14,7 @@ public static class TypeExtensions
     /// otherwise, the <see cref="MemberInfo.Name"/> instead.  If the type being extended is <see langword="null"/>,
     /// then an empty string is returned.
     /// </returns>
-    public static string GetName(this Type? type)
+    internal static string GetName(this Type? type)
     {
         if (type is null)
         {
@@ -33,21 +33,16 @@ public static class TypeExtensions
     /// otherwise, the original <paramref name="type"/> passed.
     /// </returns>
     /// <exception cref="ArgumentNullException"/>
-    public static Type GetUnderlyingType(this Type type)
+    internal static Type GetUnderlyingType(this Type type)
     {
         Guard.ThrowIfNull(type, nameof(type));
         return !TryGetNullableFromNonNull(type, out Type? underlying)
             ? type
             : underlying;
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="underlying"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"/>
+
     [DebuggerStepThrough]
-    public static bool TryGetNullable(this Type type, [NotNullWhen(true)] out Type? underlying)
+    internal static bool TryGetNullable(this Type type, [NotNullWhen(true)] out Type? underlying)
     {
         Guard.ThrowIfNull(type, nameof(type));
         return TryGetNullableFromNonNull(type, out underlying);

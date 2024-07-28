@@ -10,7 +10,7 @@ namespace AttributeDI.Attributes;
 /// A base attribute for defining services that will be automatically added to the dependency injection container
 /// with derived types being able to access/define the service type, implementation type.
 /// </summary>
-public abstract class ServiceRegistrationBaseAttribute : Attribute, IDependencyInjectionAttribute
+public abstract class ServiceRegistrationBaseAttribute : AttributeDIAttribute
 {
     /// <summary>
     /// The <see cref="Type"/> implementing the service.

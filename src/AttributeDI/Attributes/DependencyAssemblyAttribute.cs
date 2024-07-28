@@ -14,6 +14,6 @@ namespace AttributeDI.Attributes;
 ///     </code>
 /// </remarks>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-public sealed class DependencyAssemblyAttribute : Attribute
+public sealed class DependencyAssemblyAttribute : Attribute, IDependencyInjectionAttribute
 {
 }

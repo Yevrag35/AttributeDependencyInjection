@@ -12,7 +12,7 @@ namespace AttributeDI.Attributes;
 ///     the registration.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-public sealed class DynamicServiceRegistrationAttribute : Attribute, IDependencyInjectionAttribute
+public sealed class DynamicServiceRegistrationAttribute : AttributeDIAttribute, IDependencyInjectionAttribute
 {
 }
 

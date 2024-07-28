@@ -12,6 +12,7 @@ namespace AttributeDI;
 /// </summary>
 public sealed class AttributedServiceOptions
 {
+    private BindingFlags _dynamicMethodFlags;
     private Action<IAddServiceTypeExclusions>? _exclusionAction;
     private bool _includeDynamic;
     private ActOnReferencer? _referencerAction;
@@ -58,6 +59,31 @@ public sealed class AttributedServiceOptions
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether to include public-visibility in the search for a 
+    /// method decorated with <see cref="DynamicServiceRegistrationMethodAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    /// By default, only non-public methods are included in the search criteria. Regardless of this value, only
+    /// <see langword="static"/> methods are included in the criteria.
+    /// </remarks>
+    public bool IncludePublicDynamicMethods
+    {
+        [DebuggerStepThrough]
+        get => _dynamicMethodFlags.HasFlag(BindingFlags.Public);
+        set
+        {
+            if (value)
+            {
+                _dynamicMethodFlags |= BindingFlags.Public;
+            }
+            else
+            {
+                _dynamicMethodFlags &= ~BindingFlags.Public;
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets or sets a value indicating whether to include non-attributed assemblies in the scan.
     /// </summary>
     /// <remarks>
@@ -92,6 +118,7 @@ public sealed class AttributedServiceOptions
     /// </summary>
     internal AttributedServiceOptions()
     {
+        _dynamicMethodFlags = BindingFlags.NonPublic | BindingFlags.Static;
         this.AssembliesToScan = Array.Empty<Assembly>();
         this.Configuration = null!;
     }
@@ -136,6 +163,11 @@ public sealed class AttributedServiceOptions
         return !this.IncludeNonAttributedAssembliesInScan
             ? allAssemblies.Where(this.IsAttributeServicableAssembly)
             : allAssemblies.Where(this.IsServicableAssembly);
+    }
+
+    internal BindingFlags GetDynamicMethodBindingFlags()
+    {
+        return _dynamicMethodFlags;
     }
 
     /// <summary>

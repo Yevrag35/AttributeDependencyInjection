@@ -4,7 +4,6 @@ using AttributeDI.Internal.Collections;
 using AttributeDI.Internal.Extensions;
 using AttributeDI.Startup;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace AttributeDI;
@@ -20,6 +19,7 @@ public static partial class AttributeDIExtensions
 
         internal readonly bool AllowsDuplicates;
         internal readonly IConfiguration Configuration;
+        internal readonly BindingFlags DynamicMethodFlags;
         internal readonly IServiceTypeExclusions Exclusions;
         internal readonly IServiceCollection Services;
         internal readonly Type MustImplement;
@@ -29,9 +29,10 @@ public static partial class AttributeDIExtensions
         internal ServiceResolutionContext(IServiceCollection services, AttributedServiceOptions options)
         {
             AllowsDuplicates = options.AllowDuplicateServiceRegistrations;
+            DynamicMethodFlags = options.GetDynamicMethodBindingFlags();
             ThrowOnMultipleDynamic = !options.IgnoreMultipleDynamicRegistrations;
             ThrowOnMissingDynamic = options.ThrowOnMissingDynamicRegistrationMethod;
-            MustImplement = typeof(IDependencyInjectionAttribute);
+            MustImplement = typeof(AttributeDIAttribute);
             Services = services;
             Configuration = options.Configuration;
             Exclusions = options.GetServiceTypeExclusions();
@@ -49,22 +50,22 @@ public static partial class AttributeDIExtensions
 
     #region GET / ENUMERATE METHODS
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is null.</exception>
-    private static MethodInfo? GetFirstDynamicMethodByName(Type type)
+    private static MethodInfo? GetFirstDynamicMethodByName(Type type, in BindingFlags flags)
     {
         return type
-                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
+                .GetMethods(flags)
                 .Where(x => x.IsDefined(typeof(DynamicServiceRegistrationMethodAttribute), inherit: false))
                 .OrderBy(x => x.Name)
                 .FirstOrDefault();
     }
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is null.</exception>
     /// <exception cref="AttributeDIStartupException">More than one dynamic method was found.</exception>
-    private static MethodInfo? GetSingleDynamicMethod(Type type)
+    private static MethodInfo? GetSingleDynamicMethod(Type type, in BindingFlags flags)
     {
         try
         {
             return type
-                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
+                .GetMethods(flags)
                 .Where(x => x.IsDefined(typeof(DynamicServiceRegistrationMethodAttribute), inherit: false))
                 .SingleOrDefault();
         }
@@ -83,7 +84,7 @@ public static partial class AttributeDIExtensions
 
         return types.Where(x => IsProperType(x)
                                 &&
-                                x.IsDefined(mustHave)
+                                x.IsDefined(mustHave, inherit: false)
                                 &&
                                 !exclusions.IsExcluded(x));
     }
@@ -157,8 +158,8 @@ public static partial class AttributeDIExtensions
         try
         {
             method = context.ThrowOnMultipleDynamic
-                ? GetSingleDynamicMethod(type)
-                : GetFirstDynamicMethodByName(type);
+                ? GetSingleDynamicMethod(type, in context.DynamicMethodFlags)
+                : GetFirstDynamicMethodByName(type, in context.DynamicMethodFlags);
         }
         catch (Exception e) when (e is not AttributeDIStartupException)
         {
@@ -170,7 +171,7 @@ public static partial class AttributeDIExtensions
         {
             if (context.ThrowOnMissingDynamic)
             {
-                throw new AttributeDIStartupException(type, "No dynamic registration method was found on the specified type.");
+                throw new AttributeDIStartupException(type, $"No dynamic registration method was found on the specified type '{type.GetName()}'.");
             }
 
             return;

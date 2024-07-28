@@ -13,7 +13,6 @@ public static partial class AttributeDIExtensions
 {
     private const string INVALID_PARAMETERS = "Registration method must have at least the IServiceCollection parameter type.";
 
-
     /// <summary>
     /// A context for resolving services during the attribute service registration process.
     /// </summary>

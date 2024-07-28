@@ -3,19 +3,26 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
 	<Nullable>enable</Nullable>
-	<PackageId>AttributeDI</PackageId>
 	<AssemblyName>AttributeDI</AssemblyName>
+	<Title>Attribute Dependency Injection</Title>
 	<Authors>Mike Garvey</Authors>
 	<Company>Yevrag35, LLC.</Company>
+	<Copyright>Copyright (c) 2024 Yevrag35, LLC., Mike Garvey, and Contributors. All rights reserved.</Copyright>
+	<Description>A dependency injection library for registering services through attributes.</Description>
 	<RepositoryUrl>https://github.com/Yevrag35/AttributeDependencyInjection.git</RepositoryUrl>
 	<RepositoryType>Git</RepositoryType>
 	<PackageProjectUrl>https://github.com/Yevrag35/AttributeDependencyInjection</PackageProjectUrl>
+	<PackageIcon>img\icon_64.png</PackageIcon>
 	<AssemblyVersion>1.0.0</AssemblyVersion>
 	<FileVersion>1.0.0</FileVersion>
 	<InformationalVersion>1.0.0</InformationalVersion>
 	<Version>1.0.0</Version>
 	<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<PackageId>AttributeDependencyInjection</PackageId>
+	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	<PackageReadmeFile>docs\README.md</PackageReadmeFile>
+	<PackageTags>Dependency Injection;DI;Attribute;Startup;Injection;Dependency;Container;Service;Dynamic</PackageTags>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -57,6 +64,12 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="System.Memory" Version="4.5.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="..\..\.assets\icon_64.png" Pack="true" PackagePath="img\"/>
+		<None Include="..\..\README.md" Pack="true" PackagePath="docs\" />
 	</ItemGroup>
 
 </Project>

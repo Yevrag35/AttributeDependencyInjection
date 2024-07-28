@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 namespace AttributeDI.Attributes;
 
 /// <summary>
-/// An attribute on decorated classes/structs that will automatically call a registration method with the 
-/// AD API application's dependency injection container at startup.
+/// An attribute on decorated classes/structs that will automatically call a registration method with an
+/// application's dependency injection container at startup.
 /// </summary>
 /// <remarks>
 ///     Any class that uses this attribute to register itself must also have defined a <see langword="static"/>

@@ -43,7 +43,13 @@
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
-	
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" Link=".pkg\LICENSE.txt" />
+		<None Include="..\..\.assets\icon_64.png" Pack="true" PackagePath="img\" Link=".pkg\icon_64.png" />
+		<None Include="..\..\README.md" Pack="true" PackagePath="docs\" Link=".pkg\README.md" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<Using Include="Microsoft.Extensions.DependencyInjection" />
 		<Using Include="System" />
@@ -65,11 +71,8 @@
 		</PackageReference>
 		<PackageReference Include="System.Memory" Version="4.5.5" />
 	</ItemGroup>
-
 	<ItemGroup>
-		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
-		<None Include="..\..\.assets\icon_64.png" Pack="true" PackagePath="img\"/>
-		<None Include="..\..\README.md" Pack="true" PackagePath="docs\" />
+	  <Folder Include=".pkg\" />
 	</ItemGroup>
 
 </Project>

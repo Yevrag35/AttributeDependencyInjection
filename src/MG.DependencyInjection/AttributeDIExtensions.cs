@@ -13,12 +13,15 @@ namespace MG.DependencyInjection;
 public static partial class AttributeDIExtensions
 {
     //public static IServiceCollection AddAttributedServices(this IServiceCollection services, IConfiguration? configuration, Action<>)
-    public static IServiceCollection AddAttributedServices(this IServiceCollection services, Assembly[] assemblies, IConfiguration? configuration, Action<IAddServiceTypeExclusions>? configureExclusions = null)
+    public static IServiceCollection AddAttributedServices(this IServiceCollection services, Action<AttributedServiceOptions> configureOptions)
     {
-        IServiceTypeExclusions exclusions = ServiceTypeExclusions.ConfigureFromAction(configureExclusions);
-        ServiceResolutionContext context = new(services, configuration!, in exclusions);
+        AttributedServiceOptions options = new();
+        configureOptions(options);
 
-        foreach (Assembly assembly in assemblies.Where(IsServicableAssembly))
+        IServiceTypeExclusions exclusions = options.GetServiceTypeExclusions();
+        ServiceResolutionContext context = new(services, options.Configuration, in exclusions);
+
+        foreach (Assembly assembly in options.GetAssemblies())
         {
             AddResolvedServicesFromAssembly(assembly, in context);
         }

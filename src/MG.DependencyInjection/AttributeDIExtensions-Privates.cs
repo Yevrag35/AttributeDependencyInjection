@@ -11,6 +11,8 @@ namespace MG.DependencyInjection;
 
 public static partial class AttributeDIExtensions
 {
+    private const string INVALID_PARAMETERS = "Registration method must have at least the IServiceCollection parameter type.";
+
     private readonly struct ServiceResolutionContext
     {
         private readonly object[] _overload1;
@@ -95,7 +97,7 @@ public static partial class AttributeDIExtensions
 
         if (0 == flags.Count)
         {
-            throw new AdApiStartupException(type, Errors.Exception_InvalidMethodParameters);
+            throw new AttributeDIStartupException(type, INVALID_PARAMETERS);
         }
     }
     private static bool IsProperType(Type type)
@@ -137,7 +139,7 @@ public static partial class AttributeDIExtensions
 
         try
         {
-            Span<bool> twoBools = [false, false];
+            Span<bool> twoBools = stackalloc bool[2] { false, false };
             BoolCounter counter = new(twoBools);
             CheckParameters(type, method, ref counter);
 
@@ -150,7 +152,7 @@ public static partial class AttributeDIExtensions
     }
 
     /// <exception cref="DuplicatedServiceException"/>
-    /// <exception cref="AdApiStartupException"></exception>
+    /// <exception cref="AttributeDIStartupException"></exception>
     private static void AddResolvedServicesFromAssembly(Assembly assembly, in ServiceResolutionContext context)
     {
         foreach (Type type in GetResolvableTypes(assembly, context))

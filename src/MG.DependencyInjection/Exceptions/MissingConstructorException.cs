@@ -53,7 +53,7 @@ public sealed class MissingConstructorException : AttributeDIException
     {
         this.ClassType = classType;
         this.BindingFlagsUsed = flagsUsed;
-        this.ParameterTypes = [];
+        this.ParameterTypes = Type.EmptyTypes;
     }
 
     private static string FormatMessage(string format, Type classType, BindingFlags flagsUsed)

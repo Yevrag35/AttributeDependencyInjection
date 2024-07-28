@@ -5,6 +5,7 @@ using AttributeDI.Internal.Extensions;
 using AttributeDI.Startup;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace AttributeDI;
 
@@ -12,20 +13,61 @@ public static partial class AttributeDIExtensions
 {
     private const string INVALID_PARAMETERS = "Registration method must have at least the IServiceCollection parameter type.";
 
+
+    /// <summary>
+    /// A context for resolving services during the attribute service registration process.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct ServiceResolutionContext
     {
         private readonly object[] _overload1;
         private readonly object[] _overload2;
 
+        /// <summary>
+        /// Gets a value indicating whether duplicate service registrations are allowed.
+        /// </summary>
         internal readonly bool AllowsDuplicates;
+
+        /// <summary>
+        /// Gets the configuration for the attributed services.
+        /// </summary>
         internal readonly IConfiguration Configuration;
+
+        /// <summary>
+        /// Gets the binding flags for dynamic method resolution.
+        /// </summary>
         internal readonly BindingFlags DynamicMethodFlags;
+
+        /// <summary>
+        /// Gets the service type exclusions for the attributed services.
+        /// </summary>
         internal readonly IServiceTypeExclusions Exclusions;
+
+        /// <summary>
+        /// Gets the service collection where services are registered.
+        /// </summary>
         internal readonly IServiceCollection Services;
+
+        /// <summary>
+        /// Gets the attribute <see cref="Type"/> that the AttributeDI attributes must derive from.
+        /// </summary>
         internal readonly Type MustImplement;
+
+        /// <summary>
+        /// Gets a value indicating whether an exception should be thrown on multiple dynamic registrations.
+        /// </summary>
         internal readonly bool ThrowOnMultipleDynamic;
+
+        /// <summary>
+        /// Gets a value indicating whether an exception should be thrown on missing dynamic registration methods.
+        /// </summary>
         internal readonly bool ThrowOnMissingDynamic;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServiceResolutionContext"/> struct.
+        /// </summary>
+        /// <param name="services">The service collection where services are registered.</param>
+        /// <param name="options">The options used for configuring attributed services.</param>
         internal ServiceResolutionContext(IServiceCollection services, AttributedServiceOptions options)
         {
             AllowsDuplicates = options.AllowDuplicateServiceRegistrations;
@@ -40,7 +82,16 @@ public static partial class AttributeDIExtensions
             _overload2 = new object[2] { services, options.Configuration };
         }
 
-        /// <inheritdoc cref="MethodBase.Invoke(object, object[])" path="/exception"/>
+        /// <summary>
+        /// Invokes the specified static method with the appropriate parameters.
+        /// </summary>
+        /// <param name="method">The method to invoke.</param>
+        /// <param name="includeConfiguration">
+        /// If true, includes the configuration parameter in the method invocation; otherwise, excludes it.
+        /// </param>
+        /// <exception cref="TargetInvocationException">
+        /// Thrown when the method invoked throws an exception.
+        /// </exception>
         internal readonly void InvokeStaticMethod(MethodInfo method, in bool includeConfiguration)
         {
             object[] parameters = !includeConfiguration ? _overload1 : _overload2;

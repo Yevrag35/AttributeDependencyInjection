@@ -10,7 +10,7 @@ namespace AttributeDI.Exceptions;
 public class AttributeDIException : Exception
 {
     private const string THIS_DOT = "this.";
-    private const string DEFAULT_MESSAGE = "An exception was thrown due to a invalid operation in the MG.DependencyInjection library.";
+    private const string DEFAULT_MESSAGE = "An exception was thrown due to a invalid operation in the AttributeDI library.";
 
     /// <summary>
     /// Initializes a new instance of <see cref="AttributeDIException"/> without a message but with a 

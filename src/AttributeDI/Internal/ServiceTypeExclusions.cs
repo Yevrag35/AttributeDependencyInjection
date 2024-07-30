@@ -1,6 +1,5 @@
 using AttributeDI.Startup;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace AttributeDI.Internal;

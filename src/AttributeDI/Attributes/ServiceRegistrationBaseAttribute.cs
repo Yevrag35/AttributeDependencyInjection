@@ -1,7 +1,6 @@
 using AttributeDI.Exceptions;
 using AttributeDI.Internal.Collections;
 using AttributeDI.Startup;
-using System.Collections.Generic;
 
 namespace AttributeDI.Attributes;
 
@@ -131,13 +130,13 @@ public abstract class ServiceRegistrationBaseAttribute : AttributeDIAttribute
     [DebuggerStepThrough]
     protected static void ValidateImplementationType(Type serviceType, Type implementationType)
     {
-        BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-        ConstructorInfo[] ctors = implementationType.GetConstructors(flags);
-        if (ctors.Length <= 0)
-        {
-            throw new MissingConstructorException(implementationType, flags);
-        }
-        else if (!ReferenceEquals(serviceType, implementationType) && !ImplementsType(serviceType, implementationType))
+        //BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
+        //ConstructorInfo[] ctors = implementationType.GetConstructors(flags);
+        //if (ctors.Length <= 0)
+        //{
+        //    throw new MissingConstructorException(implementationType, flags);
+        //}
+        if (!ReferenceEquals(serviceType, implementationType) && !ImplementsType(serviceType, implementationType))
         {
             throw new TypeNotAssignableException(serviceType, implementationType);
         }

@@ -81,8 +81,7 @@ namespace AttributeDI.Analyzer
             var ctors = symbol.Constructors.Where(x => x.DeclaredAccessibility == Accessibility.Public
                                                        &&
                                                        !x.IsStatic);
-
-            return symbol.
+            return true;
         }
     }
 }

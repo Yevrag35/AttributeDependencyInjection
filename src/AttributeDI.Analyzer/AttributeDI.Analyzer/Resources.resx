@@ -129,4 +129,10 @@
     <value>Type name contains lowercase letters</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="StaticAbstractRuleTitle" xml:space="preserve">
+    <value>Service registration on abstract or static classes</value>
+  </data>
+  <data name="StaticAbstractRuleDescription" xml:space="preserve">
+    <value>ServiceRegistrationAttribute should not be used on abstract or static classes.</value>
+  </data>
 </root>

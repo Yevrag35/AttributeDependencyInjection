@@ -9,15 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{CF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributedDI.ConsoleExample", "AttributedDI.ConsoleExample\AttributedDI.ConsoleExample.csproj", "{AC0C68BC-1670-4938-9096-37F4DEE27B38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttributeDI.Analyzer", "AttributeDI.Analyzer\AttributeDI.Analyzer\AttributeDI.Analyzer.csproj", "{B364882B-7BDB-41F4-A9B8-B43C4101BDB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributeDI.Analyzer", "AttributeDI.Analyzer\AttributeDI.Analyzer\AttributeDI.Analyzer.csproj", "{B364882B-7BDB-41F4-A9B8-B43C4101BDB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttributeDI.Analyzer.CodeFixes", "AttributeDI.Analyzer\AttributeDI.Analyzer.CodeFixes\AttributeDI.Analyzer.CodeFixes.csproj", "{2ABCA9D5-69AD-418F-BACB-DE0754663387}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributeDI.Analyzer.CodeFixes", "AttributeDI.Analyzer\AttributeDI.Analyzer.CodeFixes\AttributeDI.Analyzer.CodeFixes.csproj", "{2ABCA9D5-69AD-418F-BACB-DE0754663387}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttributeDI.Analyzer.Package", "AttributeDI.Analyzer\AttributeDI.Analyzer.Package\AttributeDI.Analyzer.Package.csproj", "{A1ECE067-CCAA-4E2B-9316-202D6AEE356F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributeDI.Analyzer.Package", "AttributeDI.Analyzer\AttributeDI.Analyzer.Package\AttributeDI.Analyzer.Package.csproj", "{A1ECE067-CCAA-4E2B-9316-202D6AEE356F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttributeDI.Analyzer.Test", "AttributeDI.Analyzer\AttributeDI.Analyzer.Test\AttributeDI.Analyzer.Test.csproj", "{DC23D2E2-427E-4E43-9EAC-674603B0A874}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributeDI.Analyzer.Test", "AttributeDI.Analyzer\AttributeDI.Analyzer.Test\AttributeDI.Analyzer.Test.csproj", "{DC23D2E2-427E-4E43-9EAC-674603B0A874}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttributeDI.Analyzer.Vsix", "AttributeDI.Analyzer\AttributeDI.Analyzer.Vsix\AttributeDI.Analyzer.Vsix.csproj", "{EA483B62-B68C-42A5-ACFF-1FB0880AEDA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributeDI.Analyzer.Vsix", "AttributeDI.Analyzer\AttributeDI.Analyzer.Vsix\AttributeDI.Analyzer.Vsix.csproj", "{EA483B62-B68C-42A5-ACFF-1FB0880AEDA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analyzers", "Analyzers", "{1E9D70D3-F3D1-4487-97DD-A51F6717D6A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,11 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AC0C68BC-1670-4938-9096-37F4DEE27B38} = {CF6FA248-FB4F-4DA9-B1E6-6E237DF6AD33}
+		{B364882B-7BDB-41F4-A9B8-B43C4101BDB0} = {1E9D70D3-F3D1-4487-97DD-A51F6717D6A0}
+		{2ABCA9D5-69AD-418F-BACB-DE0754663387} = {1E9D70D3-F3D1-4487-97DD-A51F6717D6A0}
+		{A1ECE067-CCAA-4E2B-9316-202D6AEE356F} = {1E9D70D3-F3D1-4487-97DD-A51F6717D6A0}
+		{DC23D2E2-427E-4E43-9EAC-674603B0A874} = {1E9D70D3-F3D1-4487-97DD-A51F6717D6A0}
+		{EA483B62-B68C-42A5-ACFF-1FB0880AEDA2} = {1E9D70D3-F3D1-4487-97DD-A51F6717D6A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EF8D387-2559-40F0-ACBF-0E805A82CA27}

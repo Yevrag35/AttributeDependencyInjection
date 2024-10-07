@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
+    <TargetFramework>net8.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
+
+	<ItemGroup>
+		<Using Include="AttributeDI"/>
+		<Using Include="AttributeDI.Attributes"/>
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
@@ -21,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AttributeDI\AttributeDI.csproj" />
     <ProjectReference Include="..\AttributeDI.Analyzer.CodeFixes\AttributeDI.Analyzer.CodeFixes.csproj" />
     <ProjectReference Include="..\AttributeDI.Analyzer\AttributeDI.Analyzer.csproj" />
   </ItemGroup>

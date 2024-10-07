@@ -32,7 +32,10 @@ namespace AttributeDI.Analyzer.Test
 
     namespace ConsoleApplication1
     {
-        class {|#0:TypeName|}
+        public class ServiceRegistrationAttribute : Attribute {}
+
+        [ServiceRegistration]
+        static class {|#0:TypeName|}
         {   
         }
     }";
@@ -47,12 +50,15 @@ namespace AttributeDI.Analyzer.Test
 
     namespace ConsoleApplication1
     {
+        public class ServiceRegistrationAttribute : Attribute {}
+
+        [ServiceRegistration]
         class TYPENAME
-        {   
+        {
         }
     }";
 
-            var expected = VerifyCS.Diagnostic("AttributeDIAnalyzer").WithLocation(0).WithArguments("TypeName");
+            var expected = VerifyCS.Diagnostic("ADI001").WithLocation(0).WithArguments("TypeName");
             await VerifyCS.VerifyCodeFixAsync(test, expected, fixtest);
         }
     }

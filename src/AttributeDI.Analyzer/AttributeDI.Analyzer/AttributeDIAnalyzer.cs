@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading;
 
 #nullable enable
@@ -15,7 +16,7 @@ namespace AttributeDI.Analyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeDIAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "ADI-001";
+        public const string DiagnosticId = "ADI001";
         private const string _attName = "ServiceRegistrationAttribute";
 
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
@@ -44,23 +45,22 @@ namespace AttributeDI.Analyzer
         {
             // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
             var namedTypeSymbol = (INamedTypeSymbol)context.Symbol;
-            if ((namedTypeSymbol.TypeKind != TypeKind.Class && namedTypeSymbol.TypeKind != TypeKind.Struct)
-                ||
-                !TryGetSRAttribute(namedTypeSymbol, out AttributeData? attribute))
+            if (namedTypeSymbol.TypeKind == TypeKind.Class && TryGetCustomAttribute(namedTypeSymbol, out var attribute))
             {
-                return;
+                if (IsAbstractOrStatic(namedTypeSymbol, in context))
+                {
+                    var diagnostic = Diagnostic.Create(StaticAbstractRule, namedTypeSymbol.Locations[0], namedTypeSymbol.Name);
+                    context.ReportDiagnostic(diagnostic);
+                }
             }
 
-            if (IsAbstractOrStatic(namedTypeSymbol, in context))
-            {
-                return;
-            }
+            
 
-            var constructors = namedTypeSymbol.Constructors;
-            if (constructors.Length <= 0 || !constructors.Any(x => x.DeclaredAccessibility == Accessibility.Public))
-            {
+            //var constructors = namedTypeSymbol.Constructors;
+            //if (constructors.Length <= 0 || !constructors.Any(x => x.DeclaredAccessibility == Accessibility.Public))
+            //{
 
-            }
+            //}
 
             //// Find just those named type symbols with names containing lowercase letters.
             //if (namedTypeSymbol.Name.ToCharArray().Any(char.IsLower))
@@ -92,27 +92,13 @@ namespace AttributeDI.Analyzer
         {
             if (symbol.IsAbstract || symbol.IsStatic)
             {
-                Diagnostic.Create(StaticAbstractRule, symbol.Locations[0], symbol.Name);
+                
                 return true;
             }
 
             return false;
         }
-        private static bool IsStructAndServiceTypeIsNotInterface(AttributeData data, INamedTypeSymbol symbol, in SymbolAnalysisContext context)
-        {
-            if (symbol.TypeKind != TypeKind.Struct)
-            {
-                return false;
-            }
-
-            var constructorArgs = data.ConstructorArguments;
-            var namedArgs = data.NamedArguments;
-            if (constructorArgs.Length == 0 && namedArgs.Length == 0)
-            {
-
-            }
-        }
-        private static bool TryGetSRAttribute(INamedTypeSymbol symbol, [NotNullWhen(true)] out AttributeData? attribute)
+        private static bool TryGetCustomAttribute(INamedTypeSymbol symbol, [NotNullWhen(true)] out AttributeData? attribute)
         {
             ImmutableArray<AttributeData> attributes = symbol.GetAttributes();
             attribute = attributes.FirstOrDefault(EqualsSRAttribute);

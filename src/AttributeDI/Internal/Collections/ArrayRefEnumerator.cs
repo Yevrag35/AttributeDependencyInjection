@@ -27,10 +27,9 @@ internal ref struct ArrayRefEnumerator<T>
 
     public bool MoveNext()
     {
-        bool flag = false;
-        return this.MoveNext(in flag);
+        return this.MoveNext(false);
     }
-    public bool MoveNext(in bool flag)
+    public bool MoveNext(bool flag)
     {
         if (flag)
         {
@@ -49,7 +48,7 @@ internal ref struct ArrayRefEnumerator<T>
         _index = next;
         return true;
     }
-    public bool MoveNext(in bool flag, ref int index)
+    public bool MoveNext(bool flag, ref int index)
     {
         if (flag)
         {

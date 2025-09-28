@@ -22,20 +22,20 @@ internal ref struct BoolCounter
         _count = 0;
     }
 
-    private readonly bool IndexHasFlag(in int flag)
+    private readonly bool IndexHasFlag(int flag)
     {
         return _counted[flag];
     }
 
     internal bool MarkFlag(int flag, bool value)
     {
-        return value && this.MarkFlag(in flag);
+        return value && this.MarkFlag(flag);
     }
-    internal bool MarkFlag(in int flag)
+    internal bool MarkFlag(int flag)
     {
         bool result = false;
 
-        if (!this.IndexHasFlag(in flag))
+        if (!this.IndexHasFlag(flag))
         {
             result = true;
             _counted[flag] = result;

@@ -17,7 +17,7 @@ public static partial class AttributeDIExtensions
     /// A context for resolving services during the attribute service registration process.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ServiceResolutionContext
+    private sealed class ServiceResolutionContext
     {
         private readonly object[] _overload1;
         private readonly object[] _overload2;
@@ -91,7 +91,7 @@ public static partial class AttributeDIExtensions
         /// <exception cref="TargetInvocationException">
         /// Thrown when the method invoked throws an exception.
         /// </exception>
-        internal readonly void InvokeStaticMethod(MethodInfo method, in bool includeConfiguration)
+        internal void InvokeStaticMethod(MethodInfo method, bool includeConfiguration)
         {
             object[] parameters = !includeConfiguration ? _overload1 : _overload2;
             _ = method.Invoke(null, parameters);
@@ -100,7 +100,7 @@ public static partial class AttributeDIExtensions
 
     #region GET / ENUMERATE METHODS
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is null.</exception>
-    private static MethodInfo? GetFirstDynamicMethodByName(Type type, in BindingFlags flags)
+    private static MethodInfo? GetFirstDynamicMethodByName(Type type, BindingFlags flags)
     {
         return type
                 .GetMethods(flags)
@@ -110,7 +110,7 @@ public static partial class AttributeDIExtensions
     }
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is null.</exception>
     /// <exception cref="AttributeDIStartupException">More than one dynamic method was found.</exception>
-    private static MethodInfo? GetSingleDynamicMethod(Type type, in BindingFlags flags)
+    private static MethodInfo? GetSingleDynamicMethod(Type type, BindingFlags flags)
     {
         try
         {
@@ -142,45 +142,31 @@ public static partial class AttributeDIExtensions
     #endregion
 
     #region VALIDATION
-    /// <exception cref="InvalidOperationException"></exception>
-    private static void CheckParameters(Type type, MethodInfo method, ref BoolCounter flags)
+    /// <exception cref="AttributeDIStartupException"/>
+    /// <exception cref="InvalidOperationException"/>
+    private static bool CheckParameters(Type type, MethodInfo method)
     {
         ParameterInfo[] parameters = method.GetParameters();
-        if (parameters.Length <= 0)
+
+        switch (parameters.Length)
         {
-            throw new InvalidOperationException("Registration method must have at least the IServiceCollection parameter type");
-        }
-        else if (parameters.Length > 2)
-        {
-            throw new InvalidOperationException("Registration method must have at most two parameters");
-        }
+            case 0:
+                goto default;
 
-        ArrayRefEnumerator<ParameterInfo> enumerator = new(parameters);
-        bool tripped = false;
+            case 1 when typeof(IServiceCollection) != parameters[0].ParameterType:
+                throw new AttributeDIStartupException(type, INVALID_PARAMETERS);
 
-        while (enumerator.MoveNext(in tripped))
-        {
-            ParameterInfo parameter = enumerator.Current;
-            switch (parameter.Position)
-            {
-                case 0:
-                    flags.MarkFlag(0, typeof(IServiceCollection).Equals(parameter.ParameterType));
-                    break;
+            case 1:
+                return false;
 
-                case 1:
-                    flags.MarkFlag(1, typeof(IConfiguration).Equals(parameter.ParameterType));
-                    break;
+            case 2 when typeof(IServiceCollection) != parameters[0].ParameterType || typeof(IConfiguration) != parameters[1].ParameterType:
+                throw new AttributeDIStartupException(type, INVALID_PARAMETERS);
 
-                default:
-                    break;
-            }
+            case 2:
+                return true;
 
-            tripped = flags.Count == 2;
-        }
-
-        if (0 == flags.Count)
-        {
-            throw new AttributeDIStartupException(type, INVALID_PARAMETERS);
+            default:
+                throw new InvalidOperationException("Registration method must have 1 or 2 parameters.");
         }
     }
     private static bool IsProperType(Type type)
@@ -208,8 +194,8 @@ public static partial class AttributeDIExtensions
         try
         {
             method = context.ThrowOnMultipleDynamic
-                ? GetSingleDynamicMethod(type, in context.DynamicMethodFlags)
-                : GetFirstDynamicMethodByName(type, in context.DynamicMethodFlags);
+                ? GetSingleDynamicMethod(type, context.DynamicMethodFlags)
+                : GetFirstDynamicMethodByName(type, context.DynamicMethodFlags);
         }
         catch (Exception e) when (e is not AttributeDIStartupException)
         {
@@ -229,11 +215,9 @@ public static partial class AttributeDIExtensions
 
         try
         {
-            Span<bool> twoBools = stackalloc bool[2] { false, false };
-            BoolCounter counter = new(twoBools);
-            CheckParameters(type, method, ref counter);
+            bool wantsConfiguration = CheckParameters(type, method);
 
-            context.InvokeStaticMethod(method, in twoBools[twoBools.Length - 1]);
+            context.InvokeStaticMethod(method, wantsConfiguration);
         }
         catch (Exception e)
         {

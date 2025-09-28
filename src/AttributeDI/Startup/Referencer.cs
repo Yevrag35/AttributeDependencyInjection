@@ -4,7 +4,7 @@ namespace AttributeDI.Startup;
 /// A delegate that acts on a <see cref="Referencer"/>.
 /// </summary>
 /// <param name="referencer">The referencer used to load assemblies at application startup.</param>
-public delegate void ActOnReferencer(in Referencer referencer);
+public delegate void ActOnReferencer(Referencer referencer);
 
 /// <summary>
 /// A struct used at application startup to force loading of assemblies by referencing a type
@@ -57,7 +57,6 @@ public readonly ref struct Referencer
     /// <param name="action">The action to execute.</param>
     public static void LoadAll(ActOnReferencer action)
     {
-        Referencer referencer = default;
-        action(in referencer);
+        action(default);
     }
 }

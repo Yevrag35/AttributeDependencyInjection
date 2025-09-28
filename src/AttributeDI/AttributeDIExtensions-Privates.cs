@@ -5,7 +5,6 @@ using AttributeDI.Internal.Extensions;
 using AttributeDI.Startup;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace AttributeDI;
 
@@ -16,7 +15,6 @@ public static partial class AttributeDIExtensions
     /// <summary>
     /// A context for resolving services during the attribute service registration process.
     /// </summary>
-    [StructLayout(LayoutKind.Auto)]
     private sealed class ServiceResolutionContext
     {
         private readonly object[] _overload1;
@@ -143,7 +141,6 @@ public static partial class AttributeDIExtensions
 
     #region VALIDATION
     /// <exception cref="AttributeDIStartupException"/>
-    /// <exception cref="InvalidOperationException"/>
     private static bool CheckParameters(Type type, MethodInfo method)
     {
         ParameterInfo[] parameters = method.GetParameters();
@@ -166,7 +163,7 @@ public static partial class AttributeDIExtensions
                 return true;
 
             default:
-                throw new InvalidOperationException("Registration method must have 1 or 2 parameters.");
+                throw new AttributeDIStartupException(type, "Registration method must have 1 or 2 parameters.");
         }
     }
     private static bool IsProperType(Type type)
@@ -188,7 +185,7 @@ public static partial class AttributeDIExtensions
     #region ADD SERVICE
 
     /// <exception cref="AttributeDIStartupException"></exception>
-    private static void AddFromRegistration(in ServiceResolutionContext context, Type type)
+    private static void AddFromRegistration(ServiceResolutionContext context, Type type)
     {
         MethodInfo? method;
         try
@@ -227,13 +224,13 @@ public static partial class AttributeDIExtensions
 
     /// <exception cref="DuplicatedServiceException"/>
     /// <exception cref="AttributeDIStartupException"></exception>
-    private static void AddResolvedServicesFromAssembly(Assembly assembly, in ServiceResolutionContext context)
+    private static void AddResolvedServicesFromAssembly(Assembly assembly, ServiceResolutionContext context)
     {
         foreach (Type type in GetResolvableTypes(assembly, context))
         {
             if (!type.IsInterface && type.IsDefined(typeof(DynamicServiceRegistrationAttribute), inherit: false))
             {
-                AddFromRegistration(in context, type);
+                AddFromRegistration(context, type);
             }
             else if (type.IsDefined(typeof(ServiceRegistrationBaseAttribute), inherit: false))
             {
@@ -241,7 +238,7 @@ public static partial class AttributeDIExtensions
                 {
                     foreach (var descriptor in ServiceRegistrationBaseAttribute.CreateDescriptorsFromType(type, context.Exclusions))
                     {
-                        AddService(context.Services, descriptor, in context.AllowsDuplicates);
+                        AddService(context.Services, descriptor, context.AllowsDuplicates);
                     }
                 }
                 catch (Exception e) when (e is not DuplicatedServiceException)
@@ -257,7 +254,7 @@ public static partial class AttributeDIExtensions
     /// <exception cref="InvalidOperationException">
     ///     <paramref name="services"/> is read-only.
     /// </exception>
-    private static void AddService(IServiceCollection services, ServiceDescriptor descriptor, in bool allowsDuplicates)
+    private static void AddService(IServiceCollection services, ServiceDescriptor descriptor, bool allowsDuplicates)
     {
         if (!allowsDuplicates && !_addedViaAttributes.Add(descriptor))
         {
@@ -297,7 +294,7 @@ public static partial class AttributeDIExtensions
         /// <exception cref="InvalidOperationException">
         ///     <paramref name="services"/> is read-only.
         /// </exception>
-        private static void AddService(IServiceCollection services, ServiceDescriptor descriptor, in bool allowsDuplicates)
+        private static void AddService(IServiceCollection services, ServiceDescriptor descriptor, bool allowsDuplicates)
         {
             services.Add(descriptor);
         }

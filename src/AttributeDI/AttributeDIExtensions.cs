@@ -1,6 +1,7 @@
 using AttributeDI.Exceptions;
 using AttributeDI.Startup;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace AttributeDI;
 
@@ -17,13 +18,13 @@ public static partial class AttributeDIExtensions
     /// <param name="assemblies">The assemblies to scan for attributed services.</param>
     /// <param name="configuration">The configuration for the attributed services.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
-    /// <inheritdoc cref="AddResolvedServicesFromAssembly(Assembly, in ServiceResolutionContext)"
+    /// <inheritdoc cref="AddResolvedServicesFromAssembly(Assembly, ServiceResolutionContext)"
     ///  path="/exception"/>
-    public static IServiceCollection AddAttributedServices(this IServiceCollection services, Assembly[] assemblies, IConfiguration? configuration)
+    public static IServiceCollection AddAttributedServices(this IServiceCollection services, IEnumerable<Assembly> assemblies, IConfiguration? configuration)
     {
         AttributedServiceOptions options = new()
         {
-            AssembliesToScan = assemblies,
+            AssembliesToScan = assemblies.ToArray(),
             Configuration = configuration!,
         };
 
@@ -35,7 +36,7 @@ public static partial class AttributeDIExtensions
     /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
     /// <param name="configureOptions">The action to configure the <see cref="AttributedServiceOptions"/>.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
-    /// <inheritdoc cref="AddResolvedServicesFromAssembly(Assembly, in ServiceResolutionContext)"
+    /// <inheritdoc cref="AddResolvedServicesFromAssembly(Assembly, ServiceResolutionContext)"
     ///  path="/exception"/>
     public static IServiceCollection AddAttributedServices(this IServiceCollection services, Action<AttributedServiceOptions> configureOptions)
     {
@@ -45,7 +46,7 @@ public static partial class AttributeDIExtensions
         return AddAttributedServicesFromOptions(services, options);
     }
 
-    /// <inheritdoc cref="AddResolvedServicesFromAssembly(Assembly, in ServiceResolutionContext)"
+    /// <inheritdoc cref="AddResolvedServicesFromAssembly(Assembly, ServiceResolutionContext)"
     ///  path="/exception"/>
     private static IServiceCollection AddAttributedServicesFromOptions(IServiceCollection services, AttributedServiceOptions configuredOptions)
     {
@@ -54,7 +55,7 @@ public static partial class AttributeDIExtensions
 
         foreach (Assembly assembly in configuredOptions.GetAssemblies())
         {
-            AddResolvedServicesFromAssembly(assembly, in context);
+            AddResolvedServicesFromAssembly(assembly, context);
         }
 
         return services;

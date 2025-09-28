@@ -14,7 +14,6 @@ public sealed class AttributedServiceOptions
 {
     private BindingFlags _dynamicMethodFlags;
     private Action<IAddServiceTypeExclusions>? _exclusionAction;
-    private bool _includeDynamic;
     private ActOnReferencer? _referencerAction;
 
     /// <summary>
@@ -52,11 +51,7 @@ public sealed class AttributedServiceOptions
     /// This library has *NOT* been tested with dynamic assemblies, so set to <see langword="true"/> only if you know 
     /// what you are doing.
     /// </remarks>
-    public bool IncludeDynamicAssembliesInScan
-    {
-        get => _includeDynamic;
-        set => _includeDynamic = value;
-    }
+    public bool IncludeDynamicAssembliesInScan { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to include public-visibility in the search for a 
@@ -69,7 +64,7 @@ public sealed class AttributedServiceOptions
     public bool IncludePublicDynamicMethods
     {
         [DebuggerStepThrough]
-        get => _dynamicMethodFlags.HasFlag(BindingFlags.Public);
+        get => (_dynamicMethodFlags & BindingFlags.Public) != BindingFlags.Default;
         set
         {
             if (value)
@@ -196,6 +191,6 @@ public sealed class AttributedServiceOptions
     /// <returns>True if the assembly is serviceable; otherwise, false.</returns>
     private bool IsServicableAssembly(Assembly assembly)
     {
-        return _includeDynamic || !assembly.IsDynamic;
+        return this.IncludeDynamicAssembliesInScan || !assembly.IsDynamic;
     }
 }

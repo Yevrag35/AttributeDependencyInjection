@@ -24,8 +24,8 @@ public static partial class AttributeDIExtensions
     {
         AttributedServiceOptions options = new()
         {
-            AssembliesToScan = assemblies.ToArray(),
-            Configuration = configuration!,
+            AssembliesToScan = assemblies is Assembly[] array ? array : assemblies.ToArray(),
+            Configuration = configuration,
         };
 
         return AddAttributedServicesFromOptions(services, options);

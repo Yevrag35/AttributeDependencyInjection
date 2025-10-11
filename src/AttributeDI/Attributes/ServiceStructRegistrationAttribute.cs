@@ -17,15 +17,14 @@ public class ServiceStructRegistrationAttribute : ServiceRegistrationAttribute
     /// <inheritdoc path="/*[not(self::exception)]"/>
     /// <exception cref="ArgumentException"><paramref name="value"/> is not an interface type.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-    [NotNull]
-    [DisallowNull]
+    [NotNull, DisallowNull, SuppressMessage("Style", "IDE0009:Member access should be qualified.", Justification = "Used in nameof()")]
     public override Type ServiceType
     {
         [return: NotNull]
         get => base.ServiceType!;
         set
         {
-            Guard.ThrowIfNull(value, nameof(this.ServiceType));
+            Guard.ThrowIfNull(value, nameof(ServiceType));
             if (!value.IsInterface)
             {
                 throw new ArgumentException("Only interfaces can be used as service types for structs.", nameof(this.ServiceType));

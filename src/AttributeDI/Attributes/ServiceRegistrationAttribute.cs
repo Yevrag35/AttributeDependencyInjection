@@ -19,7 +19,7 @@ namespace AttributeDI.Attributes;
 /// </code>
 /// </para>
 /// </remarks>
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class ServiceRegistrationAttribute : ServiceRegistrationBaseAttribute
 {
     /// <summary>
@@ -29,7 +29,7 @@ public class ServiceRegistrationAttribute : ServiceRegistrationBaseAttribute
     public virtual Type ServiceType
     {
         [return: MaybeNull]
-        get => this.Service!;
+        get => this.Service;
         set => this.Service = value;
     }
 

@@ -26,7 +26,7 @@ public class AttributeDIStartupException : AttributeDIException
     /// </protected>
     /// <param name="diType">The type of the static class that caused the exception.</param>
     public AttributeDIStartupException(Type diType)
-        : this(diType, null, null)
+        : this(diType, message: null, innerException: null)
     {
     }
 
@@ -43,7 +43,7 @@ public class AttributeDIStartupException : AttributeDIException
     /// </param>
     /// <param name="diType"><inheritdoc cref="AttributeDIStartupException(Type)"/></param>
     public AttributeDIStartupException(Type diType, Exception? innerException)
-        : this(diType, null, innerException)
+        : this(diType, message: null, innerException)
     {
     }
 
@@ -55,7 +55,7 @@ public class AttributeDIStartupException : AttributeDIException
     /// <param name="diType"><inheritdoc cref="AttributeDIStartupException(Type)"/></param>
     /// <param name="message"><inheritdoc cref="Exception(string)" path="/param"/></param>
     public AttributeDIStartupException(Type diType, [Localizable(true)] string? message)
-        : base(GetBaseMessageFromType(message, diType), null)
+        : base(GetBaseMessageFromType(message, diType), innerException: null)
     {
         this.DIType = diType;
     }
@@ -77,6 +77,6 @@ public class AttributeDIStartupException : AttributeDIException
 
     private static string GetBaseMessageFromType(string? message, Type type)
     {
-        return GetMessageOrUseDefault(message, DEFAULT_MSG, type.GetName());
+        return GetMessageOrUseDefault(message, DEFAULT_MSG, type.FullName ?? type.Name);
     }
 }

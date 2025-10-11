@@ -14,13 +14,8 @@ internal static class TypeExtensions
     /// otherwise, the <see cref="MemberInfo.Name"/> instead.  If the type being extended is <see langword="null"/>,
     /// then an empty string is returned.
     /// </returns>
-    internal static string GetName(this Type? type)
+    internal static string GetName(this Type type)
     {
-        if (type is null)
-        {
-            return string.Empty;
-        }
-
         return type.FullName ?? type.Name;
     }
 

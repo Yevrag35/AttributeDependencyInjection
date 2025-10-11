@@ -31,7 +31,7 @@ public sealed class MissingConstructorException : AttributeDIException
     ///     <inheritdoc cref="BindingFlagsUsed" path="/summary"/>
     /// </param>
     public MissingConstructorException(Type classType, BindingFlags flagsUsed)
-        : this(classType, flagsUsed, null)
+        : this(classType, flagsUsed, innerException: null)
     {
     }
     /// <summary>

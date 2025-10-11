@@ -26,9 +26,14 @@ public sealed class DynamicServiceRegistrationAttribute : AttributeDIAttribute, 
 ///     this attribute will be ignored. Classes with multiple decorated methods will throw an exception during the 
 ///     registration process.
 ///     </para>
-///     For this attribute to function, the method must be <see langword="static"/> (with any visibility) and
-///     with 1 of 2 overloads. The <see cref="IServiceCollection"/> parameter must always be the first, and 
+///     For this attribute to function, the method must be private and <see langword="static"/>
+///     with its defined signature
+///     being 1 of 2 overloads. The <see cref="IServiceCollection"/> parameter must always be the first, and 
 ///     optionally can contain <see cref="IConfiguration"/> as the second.
+///     <para>
+///     Internal, protected, and public methods will be considered if <see cref="AttributedServiceOptions.IncludePublicDynamicMethods"/>
+///     set to <see langword="true"/>.
+///     </para>
 ///     <para>
 ///         Examples of this are:
 ///     <code>

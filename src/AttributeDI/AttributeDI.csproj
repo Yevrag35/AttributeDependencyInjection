@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
 	<Nullable>enable</Nullable>
 	<AssemblyName>AttributeDI</AssemblyName>
 	<Title>Attribute Dependency Injection</Title>
@@ -25,6 +25,11 @@
 	<PackageTags>Dependency Injection;DI;Attribute;Startup;Injection;Dependency;Container;Service;Dynamic</PackageTags>
   </PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<LangVersion>latest</LangVersion>
+		<AssemblyTitle>Attribute Dependency Injection - .NET 10</AssemblyTitle>
+		<Product>Attribute Dependency Injection - .NET 10</Product>
+	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
 		<LangVersion>latest</LangVersion>
 		<AssemblyTitle>Attribute Dependency Injection - .NET 8</AssemblyTitle>
@@ -43,11 +48,10 @@
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
-
 	<ItemGroup>
-		<None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" Link=".pkg\LICENSE.txt" />
-		<None Include="..\..\.assets\icon_64.png" Pack="true" PackagePath="img\" Link=".pkg\icon_64.png" />
-		<None Include="..\..\README.md" Pack="true" PackagePath="docs\" Link=".pkg\README.md" />
+	  <Compile Remove=".pkg\**" />
+	  <EmbeddedResource Remove=".pkg\**" />
+	  <None Remove=".pkg\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -59,20 +63,23 @@
 		<Using Include="System.Reflection" />
 	</ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0-rc.1.25451.107" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-rc.1.25451.107"/>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
   </ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="[2.1.0]" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[2.1.0]" />
 		<PackageReference Include="Microsoft.Bcl.HashCode" Version="[1.1.1]" />
 		<PackageReference Include="Nullable" Version="1.3.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="System.Memory" Version="[4.5.5]" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include=".pkg\" />
 	</ItemGroup>
 
 </Project>

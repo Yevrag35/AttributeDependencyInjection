@@ -41,7 +41,7 @@ public sealed class AttributedServiceOptions
     /// For this reason, <see langword="null"/>-checking is not performed when injecting into the dynamic methods.
     /// </para>
     /// </remarks>
-    public IConfiguration Configuration { internal get; set; }
+    public IConfiguration? Configuration { internal get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to include assemblies flagged with <see cref="Assembly.IsDynamic"/> 
@@ -115,7 +115,7 @@ public sealed class AttributedServiceOptions
     {
         _dynamicMethodFlags = BindingFlags.NonPublic | BindingFlags.Static;
         this.AssembliesToScan = Array.Empty<Assembly>();
-        this.Configuration = null!;
+        this.Configuration = null;
     }
 
     /// <summary>

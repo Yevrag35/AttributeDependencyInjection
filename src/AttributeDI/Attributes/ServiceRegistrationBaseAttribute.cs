@@ -34,7 +34,7 @@ public abstract class ServiceRegistrationBaseAttribute : AttributeDIAttribute
     /// Constructs and enumerates all <see cref="ServiceDescriptor"/> objects from the specified type.
     /// </summary>
     /// <returns>
-    /// An <see cref="IEnumerable{T}"/> of <see cref="ServiceDescriptor"/> objects that were created from the 
+    /// A <see cref="List{T}"/> of <see cref="ServiceDescriptor"/> objects that were created from the 
     /// specified type.
     /// </returns>
     /// <exception cref="ArgumentException"/>
@@ -42,15 +42,18 @@ public abstract class ServiceRegistrationBaseAttribute : AttributeDIAttribute
     ///     cref="TryCreateDescriptorFromAttribute(ServiceRegistrationBaseAttribute, Type, in IServiceTypeExclusions, out ServiceDescriptor)"
     ///     path="/exception"/>
     [DebuggerStepThrough]
-    public static IEnumerable<ServiceDescriptor> CreateDescriptorsFromType(Type type, IServiceTypeExclusions exclusions)
+    internal static List<ServiceDescriptor> CreateDescriptorsFromType(Type type, IServiceTypeExclusions exclusions)
     {
+        List<ServiceDescriptor> descriptors = new(10);
         foreach (var attribute in type.GetCustomAttributes<ServiceRegistrationBaseAttribute>(inherit: false))
         {
             if (TryCreateDescriptorFromAttribute(attribute, type, in exclusions, out ServiceDescriptor? descriptor))
             {
-                yield return descriptor;
+                descriptors.Add(descriptor);
             }
         }
+
+        return descriptors;
     }
 
     [DebuggerStepThrough]
@@ -59,7 +62,7 @@ public abstract class ServiceRegistrationBaseAttribute : AttributeDIAttribute
         ArrayRefEnumerator<Type> enumerator = new(implementationType.GetInterfaces());
         bool flag = false;
 
-        while (enumerator.MoveNext(in flag))
+        while (enumerator.MoveNext(flag))
         {
             Type type = enumerator.Current;
             if (!type.IsGenericTypeDefinition && type.IsGenericType)
@@ -130,12 +133,6 @@ public abstract class ServiceRegistrationBaseAttribute : AttributeDIAttribute
     [DebuggerStepThrough]
     protected static void ValidateImplementationType(Type serviceType, Type implementationType)
     {
-        //BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-        //ConstructorInfo[] ctors = implementationType.GetConstructors(flags);
-        //if (ctors.Length <= 0)
-        //{
-        //    throw new MissingConstructorException(implementationType, flags);
-        //}
         if (!ReferenceEquals(serviceType, implementationType) && !ImplementsType(serviceType, implementationType))
         {
             throw new TypeNotAssignableException(serviceType, implementationType);

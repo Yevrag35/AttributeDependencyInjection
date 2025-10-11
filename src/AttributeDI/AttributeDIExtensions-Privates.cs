@@ -18,7 +18,7 @@ public static partial class AttributeDIExtensions
     private sealed class ServiceResolutionContext
     {
         private readonly object[] _overload1;
-        private readonly object[] _overload2;
+        private readonly object?[] _overload2;
 
         /// <summary>
         /// Gets a value indicating whether duplicate service registrations are allowed.
@@ -28,7 +28,7 @@ public static partial class AttributeDIExtensions
         /// <summary>
         /// Gets the configuration for the attributed services.
         /// </summary>
-        internal readonly IConfiguration Configuration;
+        internal readonly IConfiguration? Configuration;
 
         /// <summary>
         /// Gets the binding flags for dynamic method resolution.
@@ -44,11 +44,6 @@ public static partial class AttributeDIExtensions
         /// Gets the service collection where services are registered.
         /// </summary>
         internal readonly IServiceCollection Services;
-
-        /// <summary>
-        /// Gets the attribute <see cref="Type"/> that the AttributeDI attributes must derive from.
-        /// </summary>
-        internal readonly Type MustImplement;
 
         /// <summary>
         /// Gets a value indicating whether an exception should be thrown on multiple dynamic registrations.
@@ -71,12 +66,11 @@ public static partial class AttributeDIExtensions
             DynamicMethodFlags = options.GetDynamicMethodBindingFlags();
             ThrowOnMultipleDynamic = !options.IgnoreMultipleDynamicRegistrations;
             ThrowOnMissingDynamic = options.ThrowOnMissingDynamicRegistrationMethod;
-            MustImplement = typeof(AttributeDIAttribute);
             Services = services;
             Configuration = options.Configuration;
             Exclusions = options.GetServiceTypeExclusions();
             _overload1 = new object[1] { services };
-            _overload2 = new object[2] { services, options.Configuration };
+            _overload2 = new object?[2] { services, options.Configuration };
         }
 
         /// <summary>
@@ -91,8 +85,8 @@ public static partial class AttributeDIExtensions
         /// </exception>
         internal void InvokeStaticMethod(MethodInfo method, bool includeConfiguration)
         {
-            object[] parameters = !includeConfiguration ? _overload1 : _overload2;
-            _ = method.Invoke(null, parameters);
+            object?[] parameters = !includeConfiguration ? _overload1 : _overload2;
+            _ = method.Invoke(obj: null, parameters);
         }
     }
 
@@ -125,14 +119,13 @@ public static partial class AttributeDIExtensions
     }
     private static IEnumerable<Type> GetResolvableTypes(Assembly assembly, ServiceResolutionContext context)
     {
-        Type mustHave = context.MustImplement;
         IServiceTypeExclusions exclusions = context.Exclusions;
 
         Type[] types = assembly.GetTypes();
 
         return types.Where(x => IsProperType(x)
                                 &&
-                                x.IsDefined(mustHave, inherit: false)
+                                x.IsDefined(typeof(AttributeDIAttribute), inherit: false)
                                 &&
                                 !exclusions.IsExcluded(x));
     }
@@ -275,7 +268,7 @@ public static partial class AttributeDIExtensions
                    ||
                    (x is not null && y is not null
                     &&
-                    x.ServiceType == y.ServiceType
+                    x.ServiceType.Equals(y.ServiceType)
                     &&
                     x.ImplementationType == y.ImplementationType);
         }

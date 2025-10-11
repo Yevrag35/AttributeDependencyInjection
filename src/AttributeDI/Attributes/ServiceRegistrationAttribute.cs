@@ -23,7 +23,7 @@ namespace AttributeDI.Attributes;
 public class ServiceRegistrationAttribute : ServiceRegistrationBaseAttribute
 {
     /// <summary>
-    /// The service type that the decorated type will be registered as in the <see cref="ServiceCollection"/>.
+    /// The service type that the decorated type will be registered as in the <see cref="IServiceCollection"/>.
     /// </summary>
     [MaybeNull]
     public virtual Type ServiceType

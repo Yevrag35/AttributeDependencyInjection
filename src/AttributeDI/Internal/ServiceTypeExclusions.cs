@@ -1,9 +1,16 @@
 using AttributeDI.Startup;
 using System.Collections;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace AttributeDI.Internal;
 
+/// <summary>
+/// Represents a collection of service types and generic type definitions that are excluded from service registration.
+/// </summary>
+/// <remarks>This class allows explicit and generic type exclusions to be registered and queried, supporting
+/// scenarios where certain types should not be considered for service registration. It is intended for internal use
+/// within service registration infrastructure and is not thread-safe.</remarks>
 internal sealed class ServiceTypeExclusions : IAddServiceTypeExclusions, IServiceTypeExclusions
 {
     private readonly HashSet<Type> _explicitExclusions;
@@ -16,8 +23,8 @@ internal sealed class ServiceTypeExclusions : IAddServiceTypeExclusions, IServic
 
     private ServiceTypeExclusions()
     {
-        _explicitExclusions = new HashSet<Type>();
-        _genericDefinitions = new HashSet<Type>();
+        _explicitExclusions = new();
+        _genericDefinitions = new();
     }
 
     /// <inheritdoc/>
@@ -101,6 +108,7 @@ internal sealed class ServiceTypeExclusions : IAddServiceTypeExclusions, IServic
         return exclusions;
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct EmptyExclusions : IServiceTypeExclusions
     {
         public readonly int Count => 0;

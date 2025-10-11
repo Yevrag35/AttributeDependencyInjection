@@ -50,7 +50,6 @@ public static partial class AttributeDIExtensions
     ///  path="/exception"/>
     private static IServiceCollection AddAttributedServicesFromOptions(IServiceCollection services, AttributedServiceOptions configuredOptions)
     {
-        IServiceTypeExclusions exclusions = configuredOptions.GetServiceTypeExclusions();
         ServiceResolutionContext context = new(services, configuredOptions);
 
         foreach (Assembly assembly in configuredOptions.GetAssemblies())
